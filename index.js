@@ -85,13 +85,18 @@ function run() {
       res.send(result);
     });
 
-    app.get('/products/:id', async (req,  res) => {
-      const id = req.params.id 
-      const query = {_id: ObjectId(id)}
-      const result = await productCollection.findOne(query).toArray()
-      res.send(result)
-  })
 
+    app.get('/product', async (req, res) => {
+      let query = {}
+      if (req.query?.email) {
+          query = { email: req.query?.email }
+      }
+      const cursor = productCollection.find(query)
+      const review = await cursor.toArray()
+      res.send(review)
+      
+  })
+  
 
   } finally {
   }
