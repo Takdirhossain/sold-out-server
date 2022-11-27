@@ -27,6 +27,25 @@ function run() {
     const bookingsCollection = client.db("sold-out").collection("bookings");
     const productCollection = client.db("sold-out").collection("product");
 
+    app.post("/bookings", async (req, res) => {
+      const id = req.body
+      console.log(id)
+       const query = {
+        name: id.name,
+        email: id.email,
+       
+    }
+      const alreadyBooked = await bookingsCollection.find(query).toArray()
+      if (alreadyBooked.length) {
+          const message = `You already Booked This `
+          return res.send({ acknowledge: false, message })
+      }
+      const result = await bookingsCollection.insertOne(id)
+      res.send(result)
+     
+    });
+
+
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       const user = req.body;
