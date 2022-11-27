@@ -28,31 +28,37 @@ function run() {
     const productCollection = client.db("sold-out").collection("product");
 
     app.post("/bookings", async (req, res) => {
-      const id = req.body
-      console.log(id)
-       const query = {
+      const id = req.body;
+      console.log(id);
+      const query = {
         name: id.name,
         email: id.email,
-       
-    }
-      const alreadyBooked = await bookingsCollection.find(query).toArray()
+      };
+      const alreadyBooked = await bookingsCollection.find(query).toArray();
       if (alreadyBooked.length) {
-          const message = `You already Booked This `
-          return res.send({ acknowledge: false, message })
+        const message = `You already Booked This `;
+        return res.send({ acknowledge: false, message });
       }
-      const result = await bookingsCollection.insertOne(id)
-      res.send(result)
-     
+      const result = await bookingsCollection.insertOne(id);
+      res.send(result);
     });
 
 
+
+    app.post('/user', async(req, res )=>  {
+      const user = req.body;
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+    })
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       const user = req.body;
       const filter = { email: email };
       const options = { upsert: true };
       const updateDoc = {
-        $set: user,
+        $set: {
+                 verify: "verifyed",
+             },
       };
       const result = await usersCollection.updateOne(
         filter,
@@ -77,18 +83,18 @@ function run() {
       res.send(user);
     });
 
-    app.get('/category',async(req,res)=>{
-      const query={};
-      const result=await categoryCollection.find(query).toArray()
-      res.send(result)
-  });
+    app.get("/category", async (req, res) => {
+      const query = {};
+      const result = await categoryCollection.find(query).toArray();
+      res.send(result);
+    });
 
-  app.get('/category/:id',async(req,res)=>{
-      const id=req.params.id
-      const query={_id:ObjectId(id)};
-      const result=await categoryCollection.findOne(query)
-      res.send(result)
-  });
+    app.get("/category/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await categoryCollection.findOne(query);
+      res.send(result);
+    });
     app.post("/products", async (req, res) => {
       const products = req.body;
       const result = await productCollection.insertOne(products);
@@ -104,27 +110,37 @@ function run() {
       res.send(result);
     });
 
-    app.get('/bookings', async(req, res)=> {
-      let query = {}
-      if(req.query?.email){
-        query = { email: req.query?.email }
-      }
-      const result = await bookingsCollection.find(query).toArray()
-      res.send(result)
-    })
+    app.delete("/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await usersCollection.deleteOne(query);
+      res.send(result);
+    });
 
-    app.get('/product', async (req, res) => {
-      let query = {}
+    app.get("/user", async (req, res) => {
+      const alluser = {};
+      const result = await usersCollection.find(alluser).toArray();
+      res.send(result);
+    });
+
+    app.get("/bookings", async (req, res) => {
+      let query = {};
       if (req.query?.email) {
-          query = { email: req.query?.email }
+        query = { email: req.query?.email };
       }
-      const cursor = productCollection.find(query)
-      const review = await cursor.toArray()
-      res.send(review)
-      
-  })
-  
+      const result = await bookingsCollection.find(query).toArray();
+      res.send(result);
+    });
 
+    app.get("/product", async (req, res) => {
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query?.email };
+      }
+      const cursor = productCollection.find(query);
+      const review = await cursor.toArray();
+      res.send(review);
+    });
   } finally {
   }
 }
