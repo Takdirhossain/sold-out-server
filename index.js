@@ -30,6 +30,7 @@ function run() {
     const productCollection = client.db("sold-out").collection("product");
     const reportCollection = client.db("sold-out").collection("report");
     const paymentsCollection = client.db("sold-out").collection("payments");
+    const adsCollection = client.db("sold-out").collection("ads");
 
     app.post("/create-payment-intent", async (req, res) => {
       const data = req.body;
@@ -49,7 +50,7 @@ function run() {
       const payment = req.body;
       const result = await paymentsCollection.insertOne(payment);
       const id = payment.paymentId;
-      
+
       const options = { upsert: true };
       const query = { _id: ObjectId(id) };
       const updateDoc = {
@@ -64,7 +65,7 @@ function run() {
         options
       );
       res.send(result, updateResult);
-    })
+    });
 
     app.post("/bookings", async (req, res) => {
       const id = req.body;
@@ -167,7 +168,6 @@ function run() {
       res.send(result);
     });
 
-
     app.delete("/products/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
@@ -230,6 +230,18 @@ function run() {
       const cursor = productCollection.find(query);
       const review = await cursor.toArray();
       res.send(review);
+    });
+
+    app.post("/ads", async (req, res) => {
+      const data = req.body;
+      const result = await adsCollection.insertOne(data);
+      res.send(result);
+    });
+
+    app.get("/ads", async (req, res) => {
+      const data = {};
+      const result = await adsCollection.find(data).toArray();
+      res.send(result);
     });
   } finally {
   }
