@@ -67,6 +67,12 @@ function run() {
       res.send(data)
     })
 
+    app.delete('/report',  async (req, res) => {
+      const id = req.query.id
+      const query = { productid: id }
+      const result = await reportCollection.deleteOne(query)
+      res.send(result)
+  });
 
     app.post('/user', async(req, res )=>  {
       const user = req.body;
