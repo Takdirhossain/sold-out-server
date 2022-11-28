@@ -26,6 +26,7 @@ function run() {
     const usersCollection = client.db("sold-out").collection("users");
     const bookingsCollection = client.db("sold-out").collection("bookings");
     const productCollection = client.db("sold-out").collection("product");
+    const reportCollection = client.db("sold-out").collection("report");
 
     app.post("/bookings", async (req, res) => {
       const id = req.body;
@@ -43,6 +44,27 @@ function run() {
       res.send(result);
     });
 
+
+    app.post('/report', async(req, res) => {
+      const id = req.body;
+      console.log(id);
+      const query = {
+        productid: id.productid
+      };
+      const alreadyBooked = await reportCollection.find(query).toArray();
+      if (alreadyBooked.length) {
+        const message = `You already Reported This `;
+        return res.send({ acknowledge: false, message });
+      }
+      const result = await reportCollection.insertOne(id);
+      res.send(result);
+    })
+
+    app.get('/report', async(req, res) => {
+      const query = {}
+      const data = await reportCollection.find(query).toArray()
+      res.send(data)
+    })
 
 
     app.post('/user', async(req, res )=>  {
