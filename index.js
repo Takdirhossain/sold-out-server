@@ -49,7 +49,8 @@ function run() {
       const id = req.body;
       console.log(id);
       const query = {
-        productid: id.productid
+        productid: id.productid,
+        reporteremail: id.reporteremail
       };
       const alreadyBooked = await reportCollection.find(query).toArray();
       if (alreadyBooked.length) {
