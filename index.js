@@ -100,6 +100,13 @@ function run() {
       const result = await productCollection.insertOne(products);
       res.send(result);
     });
+    
+    app.delete("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await productCollection.deleteOne(query);
+      res.send(result);
+    })
 
     app.get("/products", async (req, res) => {
       let query = {};
@@ -122,6 +129,15 @@ function run() {
       const result = await usersCollection.find(alluser).toArray();
       res.send(result);
     });
+
+    app.get('/verified', async(req, res) => {
+      let alluser = {}
+      if(req.query.email){
+        alluser= {email: req.query.email}
+      }
+      const result = await usersCollection.findOne(alluser)
+      res.send(result)
+    })
 
     app.get("/bookings", async (req, res) => {
       let query = {};
